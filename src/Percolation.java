@@ -32,21 +32,26 @@ public class Percolation {
     }
 
     private void unionNeighbor(int i, int j) {
+        int middle = coordinateCal(i, j);
         if (i > 1 && isOpen(i-1, j)) {
-            topUnion.union(coordinateCal(i, j), coordinateCal(i - 1, j));
-            backwash.union(coordinateCal(i, j), coordinateCal(i - 1, j));
+            int neighbor = coordinateCal(i - 1, j);
+            topUnion.union(middle, neighbor);
+            backwash.union(middle, neighbor);
         }
         if (i < n && isOpen(i+1, j)) {
-            topUnion.union(coordinateCal(i, j), coordinateCal(i + 1, j));
-            backwash.union(coordinateCal(i, j), coordinateCal(i + 1, j));
+            int neighbor = coordinateCal(i + 1, j);
+            topUnion.union(middle, neighbor);
+            backwash.union(middle, neighbor);
         }
         if (j > 1 && isOpen(i, j-1)) {
-            topUnion.union(coordinateCal(i, j), coordinateCal(i, j - 1));
-            backwash.union(coordinateCal(i, j), coordinateCal(i, j - 1));
+            int neighbor = coordinateCal(i, j - 1);
+            topUnion.union(middle, neighbor);
+            backwash.union(middle, neighbor);
         }
         if (j < n && isOpen(i, j+1)) {
-            topUnion.union(coordinateCal(i, j), coordinateCal(i, j + 1));
-            backwash.union(coordinateCal(i, j), coordinateCal(i, j + 1));
+            int neighbor = coordinateCal(i, j + 1);
+            topUnion.union(middle, neighbor);
+            backwash.union(middle, neighbor);
         }
     }
 
