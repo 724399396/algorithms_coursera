@@ -56,27 +56,32 @@ public class Percolation {
     }
 
     public void open(int i, int j) {
-        if (i < 1 || i > n || j < 1 || j > n)
-            throw new IndexOutOfBoundsException();
+        checkBound(i,j);
         if (!initialized) {
             initialized = true;
             init();
+        }
+        if (isOpen(i,j)) {
+            return;
         }
         openSet[coordinateCal(i, j)] = true;
         unionNeighbor(i, j);
     }
     public boolean isOpen(int i, int j) {
-        if (i < 1 || i > n || j < 1 || j > n)
-            throw new IndexOutOfBoundsException();
+        checkBound(i,j);
         return openSet[coordinateCal(i, j)];
     }
     public boolean isFull(int i, int j) {
-        if (i < 1 || i > n || j < 1 || j > n)
-            throw new IndexOutOfBoundsException();
-        return topUnion.connected(top, coordinateCal(i, j)) && openSet[coordinateCal(i, j)]
+        checkBound(i,j);
+        return openSet[coordinateCal(i, j)]
                 && backwash.connected(coordinateCal(i, j), top);
     }
     public boolean percolates() {
         return topUnion.connected(top, bottom);
+    }
+
+    private void checkBound(int i, int j) {
+        if (i < 1 || i > n || j < 1 || j > n)
+            throw new IndexOutOfBoundsException();
     }
 }
