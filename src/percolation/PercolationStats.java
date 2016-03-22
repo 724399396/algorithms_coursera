@@ -1,9 +1,6 @@
 package percolation;
 
-import edu.princeton.cs.algs4.StdIn;
-import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,13 +9,13 @@ import java.util.List;
  * @date 2016-03-22 11:03
  */
 public class PercolationStats {
-    Percolation percolation;
-    int time;
-    int N;
-    double mean;
-    double stddev;
-    double lo;
-    double hi;
+    private Percolation percolation;
+    private int time;
+    private int N;
+    private double mean;
+    private double stddev;
+    private double lo;
+    private double hi;
     public PercolationStats(int N, int T) {
         if (N <= 0 || T <= 0)
             throw new IllegalArgumentException();
@@ -28,7 +25,7 @@ public class PercolationStats {
 
     private void performPercolation() {
         List<Double> xList = new ArrayList<>();
-        for(int i = 0; i < time; i++) {
+        for (int i = 0; i < time; i++) {
             percolation = new Percolation(N);
             int opend = 0;
             List<Integer> location = allLocation();
@@ -43,11 +40,11 @@ public class PercolationStats {
         }
         double sum = 0.0;
         double stdsum = 0.0;
-        for (Double x : xList) {
+        for (double x : xList) {
             sum += x;
         }
         mean = sum / time;
-        for (Double x : xList) {
+        for (double x : xList) {
             stdsum += Math.pow((x - mean), 2);
         }
         stddev = mean / (time - 1);
@@ -58,7 +55,7 @@ public class PercolationStats {
 
     private List<Integer> allLocation() {
         List<Integer> list = new ArrayList<>();
-        for(int i = 1; i <= N*N; i++) {
+        for (int i = 1; i <= N*N; i++) {
             list.add(i);
         }
         return list;
@@ -84,8 +81,8 @@ public class PercolationStats {
         int T = Integer.parseInt(args[1]);
         PercolationStats percolationStats = new PercolationStats(N,T);
         percolationStats.performPercolation();
-        System.out.printf("%-20s = %f%n","mean",percolationStats.mean());
-        System.out.printf("%-20s = %f%n","stddev",percolationStats.stddev());
+        System.out.printf("%-20s = %f%n", "mean", percolationStats.mean());
+        System.out.printf("%-20s = %f%n", "stddev", percolationStats.stddev());
         System.out.printf("95%% confidence interval = %f, %f%n",
                 percolationStats.confidenceLo(), percolationStats.confidenceHi());
 
