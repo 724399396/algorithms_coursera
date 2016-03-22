@@ -2,45 +2,56 @@ package percolation;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by weili on 16-3-21.
  */
 public class Percolation {
-    private WeightedQuickUnionUF weightedQuickUnionUF;
+    private WeightedQuickUnionUF topUnion;
+    private Set<Integer> openSet;
     int top, bottom;
     int N;
     public Percolation(int N) {               // create N-by-N grid, with all sites blocked
         top = 0;
         bottom = N * N + 1;
         this.N = N;
-        weightedQuickUnionUF = new WeightedQuickUnionUF(N*N+2); // N*N for block, 2 for top and bottom
+        topUnion = new WeightedQuickUnionUF(N*N+2); // N*N for block, 2 for top and bottom
+        openSet = new HashSet<>();
         for(int i = 1; i <= N; i++) {
-            //weightedQuickUnionUF.union(i,top);
-            //weightedQuickUnionUF.union(bottom-i,bottom);
+            topUnion.union(i,top);
+            topUnion.union(bottom-i,bottom);
         }
 
     }
     private int coordinateCal(int i, int j) {
         return (i-1) * N + j;
     }
+
+    private void unionNeighbor(int i, int j) {
+        if (i > 1 && isOpen(i-1,j))
+            topUnion.union(coordinateCal(i,j), coordinateCal(i-1,j));
+        if (i < N && isOpen(i+1,j))
+            topUnion.union(coordinateCal(i,j), coordinateCal(i+1,j));
+        if (j > 1 && isOpen(i,j-1))
+            topUnion.union(coordinateCal(i,j), coordinateCal(i,j-1));
+        if (j < N && isOpen(i,j+1))
+            topUnion.union(coordinateCal(i,j), coordinateCal(i,j+1));
+    }
+
     public void open(int i, int j) {  // open site (row i, column j) if it is not open already
-        if (i == 1)
-            weightedQuickUnionUF.union(coordinateCal(i,j),top);
-        else {
-            if (isFull(i-1,j) || (j > 1 && isFull(i,j-1))  || (j < N && isFull(i,j+1))) {
-                weightedQuickUnionUF.union(coordinateCal(i, j), top);
-            } else
-                weightedQuickUnionUF.union(coordinateCal(i,j),bottom);
-        }
+        openSet.add(coordinateCal(i,j));
+        unionNeighbor(i,j);
     }
     public boolean isOpen(int i, int j) { // is site (row i, column j) open?
-        return weightedQuickUnionUF.connected(bottom, coordinateCal(i,j));
+        return openSet.contains(coordinateCal(i,j));
     }
     public boolean isFull(int i, int j) {
-        return weightedQuickUnionUF.connected(top, coordinateCal(i,j));
+        return topUnion.connected(top, coordinateCal(i,j)) && openSet.contains(coordinateCal(i,j));
     }    // is site (row i, column j) full?
     public boolean percolates() {
-        return weightedQuickUnionUF.connected(top,bottom);
+        return topUnion.connected(top,bottom);
     }             // does the system percolate?
 
     public static void main(String[] args) {
