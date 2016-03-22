@@ -51,17 +51,10 @@ public class PercolationStats {
         return StdStats.stddev(xList);
     }                    // sample standard deviation of percolation threshold
     public double confidenceLo() {
-<<<<<<< HEAD:src/PercolationStats.java
         return mean() - 1.96 * Math.sqrt(stddev()) / Math.sqrt(T);
     }              // low  endpoint of 95% confidence interval
     public double confidenceHi() {
         return mean() + 1.96 * Math.sqrt(stddev()) / Math.sqrt(T);
-=======
-        return mean() - Math.sqrt(stddev()) / Math.sqrt(T);
-    }              // low  endpoint of 95% confidence interval
-    public double confidenceHi() {
-        return mean() + Math.sqrt(stddev()) / Math.sqrt(T);
->>>>>>> f67f3b7ab1f383666fa363b33dfb60699e6714a3:src/PercolationStats.java
     }             // high endpoint of 95% confidence interval
 
     public static void main(String[] args) {
