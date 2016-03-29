@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class FastCollinearPoints {
 
     public FastCollinearPoints(Point[] points) {
         checkArg(points);
-        result = new LineSegment[points.length];
+        result = new LineSegment[points.length * points.length];
         Point[] pointsCopy = Arrays.copyOf(points, points.length);
         for (Point point : points) {
             Point origin = point;
@@ -39,8 +40,6 @@ public class FastCollinearPoints {
                             }
                             if (!alreadyGet.contains(new Pair<Point, Point>(min, max))) {
                                 alreadyGet.add(new Pair<Point, Point>(min, max));
-                                if (k == points.length)
-                                    resize(2*points.length);
                                 result[k++] = new LineSegment(min, max);
                             }
                         }
@@ -55,8 +54,6 @@ public class FastCollinearPoints {
                         }
                         if (!alreadyGet.contains(new Pair<Point, Point>(min, max))) {
                             alreadyGet.add(new Pair<Point, Point>(min, max));
-                            if (k == points.length)
-                                resize(2*points.length);
                             result[k++] = new LineSegment(min, max);
                         }
                     }
@@ -102,28 +99,25 @@ public class FastCollinearPoints {
             return y;
     }
 
-    private void resize(int size) {
-        LineSegment[] res = new LineSegment[size];
-        for (int i = 0; i < k; i++) {
-            res[i] = result[i];
-        }
-        result = res;
-    }
-
     public static void main(String[] args) {
+        StdDraw.setXscale(0, 32768);
+        StdDraw.setYscale(0, 32768);
         In in = new In(args[0]);
 
         int n = in.readInt();
         Point[] points = new Point[n];
         for (int i = 0; i < n; i++) {
             Point point = new Point(in.readInt(), in.readInt());
+            point.draw();
             points[i] = point;
         }
+
 
         FastCollinearPoints fastCollinearPoints = new FastCollinearPoints(points);
 
         for (LineSegment lineSegment : fastCollinearPoints.segments()) {
             System.out.println(lineSegment);
+            lineSegment.draw();
         }
         System.out.println(fastCollinearPoints.numberOfSegments());
     }
