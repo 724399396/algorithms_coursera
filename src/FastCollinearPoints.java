@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.In;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,36 +10,58 @@ import java.util.List;
  */
 public class FastCollinearPoints {
     private LineSegment[] result;
-    private List<Point> alreadyPoints = new ArrayList<>();
     private int k = 0;
+    private List<Pair<Point,Point>> alreadyGet = new ArrayList<>();
 
     public FastCollinearPoints(Point[] points) {
-        if (points == null)
-            throw new NullPointerException();
-        for (Point point : points) {
-            if (point == null)
-                throw new NullPointerException();
-        }
-        Point origin = points[0];
-        Arrays.sort(points, origin.slopeOrder());
+        checkArg(points);
         result = new LineSegment[points.length];
-        int match = 0;
-        int base = 0;
-        for (int i = 0; i < points.length; i++) {
-            if (points[base].slopeTo(origin) == points[i].slopeTo(origin)) {
-                match++;
-            } else {
-                if (match >= 4) {
-                    if ((!contains(points[base])) && (!contains(points[i-1]))) {
-                        result[k++] = new LineSegment(points[base], points[i - 1]);
-                    }
-                }
-                base = i;
-                match = 1;
+        Point[] pointsCopy = Arrays.copyOf(points, points.length);
+        for (Point point : pointsCopy) {
+            Point origin = point;
+            Arrays.sort(points, origin.slopeOrder());
+            double[] slopes = new double[points.length];
+            for (int i = 0; i < slopes.length; i++) {
+                slopes[i] = origin.slopeTo(points[i]);
             }
+            int match = 1;
+            int base = 0;
+            for (int i = 0; i < slopes.length; i++) {
+                if (slopes[base] == slopes[i]) {
+                    match++;
+                    if (i == slopes.length - 1) {
+                        if (match >= 3) {
+                            Point min = origin;
+                            Point max = origin;
+                            for (int tmp = base; tmp <= i; tmp++) {
+                                min = min(min, points[tmp]);
+                                max = max(max, points[tmp]);
+                            }
+                            if (!alreadyGet.contains(new Pair(min, max))) {
+                                alreadyGet.add(new Pair(min, max));
+                                result[k++] = new LineSegment(min, max);
+                            }
+                        }
+                    }
+                } else {
+                    if (match >= 3) {
+                        Point min = origin;
+                        Point max = origin;
+                        for (int tmp = base; tmp < i; tmp++) {
+                            min = min(min, points[tmp]);
+                            max = max(max, points[tmp]);
+                        }
+                        if (!alreadyGet.contains(new Pair(min, max))) {
+                            alreadyGet.add(new Pair(min, max));
+                            result[k++] = new LineSegment(min, max);
+                        }
+                    }
+                    base = i;
+                    match = 1;
+                }
 
+            }
         }
-
     }
     public int numberOfSegments() {
         return k;
@@ -47,13 +70,32 @@ public class FastCollinearPoints {
         return Arrays.copyOf(result, k);
     }
 
-    public boolean contains(Point y) {
-        for (Point alreadyPoint : alreadyPoints) {
-            if (alreadyPoint.compareTo(y) == 0) {
-                return true;
-            }
+    private void checkArg(Point[] points) {
+        if (points == null)
+            throw new NullPointerException();
+        for (Point point : points) {
+            if (point == null)
+                throw new NullPointerException();
         }
-        return false;
+        for (int i = 0; i < points.length; i++) {
+            for (int j = i + 1; j < points.length; j++)
+                if (points[i].compareTo(points[j]) == 0)
+                    throw new IllegalArgumentException();
+        }
+    }
+
+    private Point min(Point x, Point y) {
+        if (x.compareTo(y) < 0)
+            return x;
+        else
+            return y;
+    }
+
+    private Point max(Point x, Point y) {
+        if (x.compareTo(y) > 0)
+            return x;
+        else
+            return y;
     }
 
     public static void main(String[] args) {
@@ -61,21 +103,16 @@ public class FastCollinearPoints {
 
         int n = in.readInt();
         Point[] points = new Point[n];
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             Point point = new Point(in.readInt(), in.readInt());
             points[i] = point;
-        }
-
-        for (Point point : points) {
-            System.out.println(point);
-            point.draw();
         }
 
         FastCollinearPoints fastCollinearPoints = new FastCollinearPoints(points);
 
         for (LineSegment lineSegment : fastCollinearPoints.segments()) {
             System.out.println(lineSegment);
-            lineSegment.draw();
         }
+        System.out.println(fastCollinearPoints.numberOfSegments());
     }
 }
