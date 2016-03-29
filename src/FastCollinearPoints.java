@@ -11,18 +11,18 @@ import java.util.List;
 public class FastCollinearPoints {
     private LineSegment[] result;
     private int k = 0;
-    private List<Pair<Point,Point>> alreadyGet = new ArrayList<>();
+    private List<Pair<Point, Point>> alreadyGet = new ArrayList<>();
 
     public FastCollinearPoints(Point[] points) {
         checkArg(points);
         result = new LineSegment[points.length];
         Point[] pointsCopy = Arrays.copyOf(points, points.length);
-        for (Point point : pointsCopy) {
+        for (Point point : points) {
             Point origin = point;
-            Arrays.sort(points, origin.slopeOrder());
-            double[] slopes = new double[points.length];
-            for (int i = 0; i < slopes.length; i++) {
-                slopes[i] = origin.slopeTo(points[i]);
+            Arrays.sort(pointsCopy, origin.slopeOrder());
+            double[] slopes = new double[pointsCopy.length];
+            for (int i = 0; i < pointsCopy.length; i++) {
+                slopes[i] = origin.slopeTo(pointsCopy[i]);
             }
             int match = 1;
             int base = 0;
@@ -34,11 +34,13 @@ public class FastCollinearPoints {
                             Point min = origin;
                             Point max = origin;
                             for (int tmp = base; tmp <= i; tmp++) {
-                                min = min(min, points[tmp]);
-                                max = max(max, points[tmp]);
+                                min = min(min, pointsCopy[tmp]);
+                                max = max(max, pointsCopy[tmp]);
                             }
-                            if (!alreadyGet.contains(new Pair(min, max))) {
-                                alreadyGet.add(new Pair(min, max));
+                            if (!alreadyGet.contains(new Pair<Point, Point>(min, max))) {
+                                alreadyGet.add(new Pair<Point, Point>(min, max));
+                                if (k == points.length)
+                                    resize(2*points.length);
                                 result[k++] = new LineSegment(min, max);
                             }
                         }
@@ -48,11 +50,13 @@ public class FastCollinearPoints {
                         Point min = origin;
                         Point max = origin;
                         for (int tmp = base; tmp < i; tmp++) {
-                            min = min(min, points[tmp]);
-                            max = max(max, points[tmp]);
+                            min = min(min, pointsCopy[tmp]);
+                            max = max(max, pointsCopy[tmp]);
                         }
-                        if (!alreadyGet.contains(new Pair(min, max))) {
-                            alreadyGet.add(new Pair(min, max));
+                        if (!alreadyGet.contains(new Pair<Point, Point>(min, max))) {
+                            alreadyGet.add(new Pair<Point, Point>(min, max));
+                            if (k == points.length)
+                                resize(2*points.length);
                             result[k++] = new LineSegment(min, max);
                         }
                     }
@@ -96,6 +100,14 @@ public class FastCollinearPoints {
             return x;
         else
             return y;
+    }
+
+    private void resize(int size) {
+        LineSegment[] res = new LineSegment[size];
+        for (int i = 0; i < k; i++) {
+            res[i] = result[i];
+        }
+        result = res;
     }
 
     public static void main(String[] args) {
