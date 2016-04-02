@@ -40,25 +40,48 @@ public class KdTree {
 
     public void insert(Point2D p) {
         checkArg(p);
-
+        if (root == null)
+            root = insert(p, root, null, false, false);
+        else
+            root = insert(p, root, null, root.horizontal, false);
     }
 
-    private Node insert(Point2D p, Node node) {
-        if (node == null)
-            return new Node(p, new RectHV(0.0, 0.0, 1.0, 1.0),
+    private Node insert(Point2D p, Node node, Node parent, boolean horizontal, boolean less) {
+        if (node == null) {
+            if (parent == null)
+                return new Node(p, new RectHV(0.0, 0.0, 1.0, 1.0),
                     true, null, null);
-        if (node.horizontal) {
+            else {
+                if (!horizontal) {
+                    if (less)
+                        return new Node(p, new RectHV(parent.rect.xmin(), parent.rect.ymin()
+                                 , parent.ele.x(), parent.rect.ymax()), horizontal, null, null);
+                    else
+                        return new Node(p, new RectHV(parent.ele.x(), parent.rect.ymin()
+                                , parent.rect.xmax(), parent.rect.ymax()), horizontal, null, null);
+                } else {
+                    if (less)
+                        return new Node(p, new RectHV(parent.rect.xmin(), parent.rect.ymin()
+                                , parent.rect.xmax(), parent.ele.y()), horizontal, null, null);
+                    else
+                        return new Node(p, new RectHV(parent.rect.xmin(), parent.ele.y()
+                                , parent.rect.xmax(), parent.rect.ymax()), horizontal, null, null);
+                }
+
+            }
+        }
+        if (horizontal) {
             double parentX = node.ele.x();
             if (parentX > p.x())
-                return insert(p, node.left);
+                return insert(p, node.left, node, !node.horizontal, true);
             else
-                return insert(p, node.right);
+                return insert(p, node.right, node, !node.horizontal, false);
         } else {
             double parentY = node.ele.y();
             if (parentY > p.y())
-                return insert(p, node.left);
+                return insert(p, node.left, node, !node.horizontal, true);
             else
-                return insert(p, node.right);
+                return insert(p, node.right, node, !node.horizontal, false);
         }
     }
 
@@ -96,10 +119,10 @@ public class KdTree {
             return;
         if (node.horizontal) {
             StdDraw.setPenColor(Color.red);
-            node.ele.draw();
+            StdDraw.line(node.ele.x(), node.rect.ymin(), node.ele.x(), node.rect.ymax());
         } else {
             StdDraw.setPenColor(Color.blue);
-            node.ele.draw();
+            StdDraw.line(node.rect.xmin(), node.ele.y(), node.rect.xmax(), node.ele.y());
         }
         if (node.left != null) {
             draw(node.left);
@@ -111,21 +134,12 @@ public class KdTree {
 
     public Iterable<Point2D> range(RectHV rect) {
         checkArg(rect);
-
+        return null;
     }
 
     public Point2D nearest(Point2D p) {
         checkArg(p);
-        double min = Double.MAX_VALUE;
-        Point2D nearestPoint = null;
-        for (Point2D point2D : set) {
-            double tmp = point2D.distanceTo(p);
-            if (tmp < min) {
-                min = tmp;
-                nearestPoint = point2D;
-            }
-        }
-        return nearestPoint;
+        return null;
     }
 
     private void checkArg(Object p) {
