@@ -72,17 +72,20 @@ public class KdTree {
         }
         if (horizontal) {
             double parentX = node.ele.x();
-            if (parentX > p.x())
-                return insert(p, node.left, node, !node.horizontal, true);
-            else
-                return insert(p, node.right, node, !node.horizontal, false);
+            if (parentX > p.x()) {
+                node.left = insert(p, node.left, node, !node.horizontal, true);
+            }
+            else {
+                node.right = insert(p, node.right, node, !node.horizontal, false);
+            }
         } else {
             double parentY = node.ele.y();
             if (parentY > p.y())
-                return insert(p, node.left, node, !node.horizontal, true);
+                node.left = insert(p, node.left, node, !node.horizontal, true);
             else
-                return insert(p, node.right, node, !node.horizontal, false);
+                node.right = insert(p, node.right, node, !node.horizontal, false);
         }
+        return node;
     }
 
     public boolean contains(Point2D p) {
