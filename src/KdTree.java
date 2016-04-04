@@ -1,4 +1,3 @@
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
@@ -25,8 +24,8 @@ public class KdTree {
             this.right = right;
         }
     }
-    public Node root;
-    public int size;
+    private Node root;
+    private int size;
 
     public KdTree() {
 
@@ -50,9 +49,11 @@ public class KdTree {
 
     private Node insert(Point2D p, Node node, Node parent, boolean horizontal, boolean less) {
         if (node == null) {
-            if (parent == null)
+            size++;
+            if (parent == null) {
                 return new Node(p, new RectHV(0.0, 0.0, 1.0, 1.0),
-                    true, null, null);
+                        true, null, null);
+            }
             else {
                 if (!horizontal) {
                     if (less)
@@ -102,14 +103,18 @@ public class KdTree {
             double parentX = node.ele.x();
             if (parentX > p.x())
                 return contains(p, node.left);
-            else
+            else if (parentX < p.x())
                 return contains(p, node.right);
+            else
+                return node.ele.y() == p.y();
         } else {
             double parentY = node.ele.y();
             if (parentY > p.y())
                 return contains(p, node.left);
-            else
+            else if (parentY < p.y())
                 return contains(p, node.right);
+            else
+                return node.ele.x() == p.x();
         }
     }
 
@@ -168,7 +173,7 @@ public class KdTree {
     }
 
     private Point2D nearest(Point2D p, Node node, Point2D nearest, double value) {
-        if (node == null || node.rect.distanceTo(p) > value)
+        if (node == null || node.rect.distanceTo(p) >= value)
             return nearest;
         else {
             if (nearest == null || p.distanceTo(node.ele) < value) {
