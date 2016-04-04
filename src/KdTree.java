@@ -1,8 +1,10 @@
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 
 import java.awt.*;
+import java.util.Iterator;
 
 /**
  * Created by weili on 16-4-1.
@@ -137,12 +139,55 @@ public class KdTree {
 
     public Iterable<Point2D> range(RectHV rect) {
         checkArg(rect);
-        return null;
+        java.util.List<Point2D> res = new java.util.ArrayList<>();
+        range(rect, root, res);
+        return new Iterable<Point2D>() {
+            @Override
+            public Iterator<Point2D> iterator() {
+                return res.iterator();
+            }
+        };
+    }
+
+    private void range(RectHV rect, Node node, java.util.List<Point2D> list) {
+        if (node == null || !rect.intersects(node.rect))
+            ;
+        else {
+            boolean contain = rect.contains(node.ele);
+            if (contain) {
+                list.add(node.ele);
+            }
+            range(rect, node.left, list);
+            range(rect, node.right, list);
+        }
     }
 
     public Point2D nearest(Point2D p) {
         checkArg(p);
-        return null;
+        return nearest(p, root, null, Double.MAX_VALUE);
+    }
+
+    private Point2D nearest(Point2D p, Node node, Point2D nearest, double value) {
+        if (node == null || node.rect.distanceTo(p) > value)
+            return nearest;
+        else {
+            if (nearest == null || p.distanceTo(node.ele) < value) {
+                nearest = node.ele;
+                value = p.distanceTo(node.ele);
+            }
+            Point2D left = nearest(p, node.left, nearest, value);
+            double leftValue = p.distanceTo(left);
+            Point2D right = nearest(p, node.right, nearest, value);
+            double rightValue = p.distanceTo(right);
+            if (leftValue < value) {
+                nearest = left;
+                value = leftValue;
+            }
+            if (rightValue < value) {
+                nearest = right;
+            }
+            return nearest;
+        }
     }
 
     private void checkArg(Object p) {
