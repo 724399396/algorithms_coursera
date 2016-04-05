@@ -41,7 +41,7 @@ public class PointSET {
     }
     public Iterable<Point2D> range(RectHV rect) {
         checkArg(rect);
-        Set<Point2D> match = new TreeSet<>();
+        final Set<Point2D> match = new TreeSet<>();
         for (Point2D point2D : set) {
             if (rect.contains(point2D))
                 match.add(point2D);

@@ -2,7 +2,7 @@ import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Iterator;
 
 /**
@@ -25,7 +25,7 @@ public class KdTree {
         }
     }
     private Node root;
-    private int size;
+    private int size = 0;
 
     public KdTree() {
 
@@ -73,8 +73,12 @@ public class KdTree {
 
             }
         }
+        double parentX = node.ele.x();
+        double parentY = node.ele.y();
+        if (parentX == p.x() && parentY == p.y()) {
+            return node;
+        }
         if (horizontal) {
-            double parentX = node.ele.x();
             if (parentX > p.x()) {
                 node.left = insert(p, node.left, node, !node.horizontal, true);
             }
@@ -82,7 +86,6 @@ public class KdTree {
                 node.right = insert(p, node.right, node, !node.horizontal, false);
             }
         } else {
-            double parentY = node.ele.y();
             if (parentY > p.y())
                 node.left = insert(p, node.left, node, !node.horizontal, true);
             else
@@ -103,18 +106,18 @@ public class KdTree {
             double parentX = node.ele.x();
             if (parentX > p.x())
                 return contains(p, node.left);
-            else if (parentX < p.x())
-                return contains(p, node.right);
-            else
-                return node.ele.y() == p.y();
+            else {
+                boolean equal = node.ele.equals(p);
+                return equal || contains(p, node.right);
+            }
         } else {
             double parentY = node.ele.y();
             if (parentY > p.y())
                 return contains(p, node.left);
-            else if (parentY < p.y())
-                return contains(p, node.right);
-            else
-                return node.ele.x() == p.x();
+            else {
+                boolean equal = node.ele.equals(p);
+                return equal || contains(p, node.right);
+            }
         }
     }
 
@@ -144,7 +147,7 @@ public class KdTree {
 
     public Iterable<Point2D> range(RectHV rect) {
         checkArg(rect);
-        java.util.List<Point2D> res = new java.util.ArrayList<>();
+        final java.util.List<Point2D> res = new java.util.ArrayList<>();
         range(rect, root, res);
         return new Iterable<Point2D>() {
             @Override
@@ -155,8 +158,9 @@ public class KdTree {
     }
 
     private void range(RectHV rect, Node node, java.util.List<Point2D> list) {
-        if (node == null || !rect.intersects(node.rect))
-            ;
+        if (node == null || !rect.intersects(node.rect)) {
+
+        }
         else {
             boolean contain = rect.contains(node.ele);
             if (contain) {
@@ -173,23 +177,28 @@ public class KdTree {
     }
 
     private Point2D nearest(Point2D p, Node node, Point2D nearest, double value) {
-        if (node == null || node.rect.distanceTo(p) >= value)
+        if (node == null || node.rect.distanceSquaredTo(p) >= value) {
             return nearest;
-        else {
-            if (nearest == null || p.distanceTo(node.ele) < value) {
+        } else {
+            double distance = p.distanceSquaredTo(node.ele);
+            if (nearest == null || distance < value) {
                 nearest = node.ele;
-                value = p.distanceTo(node.ele);
+                value = distance;
             }
             Point2D left = nearest(p, node.left, nearest, value);
-            double leftValue = p.distanceTo(left);
-            Point2D right = nearest(p, node.right, nearest, value);
-            double rightValue = p.distanceTo(right);
-            if (leftValue < value) {
-                nearest = left;
-                value = leftValue;
+            if (!left.equals(nearest)) {
+                double leftValue = p.distanceSquaredTo(left);
+                if (leftValue < value) {
+                    nearest = left;
+                    value = leftValue;
+                }
             }
-            if (rightValue < value) {
-                nearest = right;
+            Point2D right = nearest(p, node.right, nearest, value);
+            if (!right.equals(nearest)) {
+                double rightValue = p.distanceSquaredTo(right);
+                if (rightValue < value) {
+                    nearest = right;
+                }
             }
             return nearest;
         }

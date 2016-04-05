@@ -14,6 +14,7 @@
  *
  ******************************************************************************/
 
+import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -21,10 +22,20 @@ public class KdTreeGenerator {
 
     public static void main(String[] args) {
         int N = Integer.parseInt(args[0]);
+        KdTree kdTree = new KdTree();
         for (int i = 0; i < N; i++) {
             double x = StdRandom.uniform(0.0, 1.0);
             double y = StdRandom.uniform(0.0, 1.0);
             StdOut.printf("%8.6f %8.6f\n", x, y);
+            kdTree.insert(new Point2D(x, y));
+            kdTree.insert(new Point2D(x, y));
+            if (kdTree.size() != i + 1) {
+                StdOut.printf("%d ~ %d\n", i + 1, kdTree.size());
+            }
+            if (!kdTree.contains(new Point2D(x, y))) {
+                StdOut.println("not contains");
+            }
         }
+
     }
 }
