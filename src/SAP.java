@@ -9,7 +9,7 @@ public class SAP {
 
     public SAP(Digraph G) {
         checkArgNull(G);
-        this.G = G;
+        this.G = new Digraph(G);
     }
 
     public int length(int v, int w) {
