@@ -48,30 +48,36 @@ public class SAP {
     }
 
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
+        checkArgNull(v, w);
+        BreadthFirstDirectedPaths vPath = new BreadthFirstDirectedPaths(G, v);
+        BreadthFirstDirectedPaths wPath = new BreadthFirstDirectedPaths(G, w);
         int min = Integer.MAX_VALUE;
-        for (Integer v1 : v) {
-            for (Integer w1 : w) {
-                int length = length(v1, w1);
+        for (int i = 0; i < G.V(); i++) {
+            if (vPath.hasPathTo(i) && wPath.hasPathTo(i)) {
+                int length = vPath.distTo(i) + wPath.distTo(i);
                 if (length < min)
                     min = length;
             }
         }
-        return min;
+        return min == Integer.MAX_VALUE ? -1 : min;
     }
 
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
-        int min = Integer.MAX_VALUE;
+        checkArgNull(v, w);
+        BreadthFirstDirectedPaths vPath = new BreadthFirstDirectedPaths(G, v);
+        BreadthFirstDirectedPaths wPath = new BreadthFirstDirectedPaths(G, w);
+        int min = Integer.MAX_VALUE;;
         int loc = -1;
-        for (Integer v1 : v) {
-            for (Integer w1 : w) {
-                int length = length(v1, w1);
+        for (int i = 0; i < G.V(); i++) {
+            if (vPath.hasPathTo(i) && wPath.hasPathTo(i)) {
+                int length = vPath.distTo(i) + wPath.distTo(i);
                 if (length < min) {
                     min = length;
-                    loc = ancestor(v1, w1);
+                    loc = i;
                 }
             }
         }
-        return min;
+        return loc;
     }
 
     private void checkArgNull(Object... input) {
