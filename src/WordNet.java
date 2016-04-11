@@ -1,38 +1,34 @@
+import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.ST;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class WordNet {
     private Digraph digraph;
-    private Map<Integer, List<String>> id2Wrods;
-    private Map<String, Integer> word2ID;
-    private Set<String> nouns;
+    private ST<Integer, Bag<String>> id2Wrods;
+    private ST<String, Integer> word2ID;
+    private SET<String> nouns;
     private SAP sap;
 
     public WordNet(String synsets, String hypernyms) {
         checkArgNull(synsets, hypernyms);
         In in = new In(synsets);
-        id2Wrods = new HashMap<>();
-        nouns = new HashSet<>();
-        word2ID = new HashMap<>();
+        id2Wrods = new ST<>();
+        nouns = new SET<>();
+        word2ID = new ST<>();
         while (in.hasNextLine()) {
             String line = in.readLine();
             String[] splits = line.split(",");
             Integer id = Integer.parseInt(splits[0]);
             String[] words = splits[1].split(" ");
-            List<String> wordsList = new LinkedList<>();
+            Bag<String> wordsList = new Bag<>();
             for (String word : words) {
                 wordsList.add(word);
                 nouns.add(word);
                 word2ID.put(word, id);
             }
-            String gloss = splits[2];
             id2Wrods.put(id, wordsList);
         }
         In in2 = new In(hypernyms);
