@@ -1,4 +1,9 @@
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.ST;
+import edu.princeton.cs.algs4.Bag;
+import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.DirectedCycle;
 
 public class WordNet {
     private Digraph digraph;
@@ -58,13 +63,23 @@ public class WordNet {
 
     public int distance(String nounA, String nounB) {
         checkArgNull(nounA, nounB);
-        return sap.length(word2ID.get(nounA), word2ID.get(nounB));
+        Iterable<Integer> nounAIds = word2ID.get(nounA);
+        Iterable<Integer> nounBIds = word2ID.get(nounB);
+        if (nounAIds == null || nounBIds == null) {
+            throw new IllegalArgumentException();
+        }
+        return sap.length(nounAIds, nounBIds);
     }
 
     public String sap(String nounA, String nounB) {
         checkArgNull(nounA, nounB);
+        Iterable<Integer> nounAIds = word2ID.get(nounA);
+        Iterable<Integer> nounBIds = word2ID.get(nounB);
+        if (nounAIds == null || nounBIds == null) {
+            throw new IllegalArgumentException();
+        }
         StringBuilder stringBuilder = new StringBuilder();
-        for (String word : id2Wrods.get(sap.ancestor(word2ID.get(nounA), word2ID.get(nounB)))) {
+        for (String word : id2Wrods.get(sap.ancestor(nounAIds, nounBIds))) {
             stringBuilder.insert(0, word + " ");
         }
         String tmp =  stringBuilder.toString();
@@ -80,6 +95,6 @@ public class WordNet {
 
     public static void main(String[] args) {
         WordNet wordNet = new WordNet(args[0], args[1]);
-        //System.out.println(wordNet.sap("Alfred_Alistair_Cooke", "tiddler"));
+        System.out.println(wordNet.sap("Alfred_Alistair_Cooke", "tiddler"));
     }
 }
