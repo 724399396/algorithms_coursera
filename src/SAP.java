@@ -25,7 +25,11 @@ public class SAP {
                     min = length;
             }
         }
-        return min == Integer.MAX_VALUE ? -1 : min;
+        if (min == Integer.MAX_VALUE) {
+            return -1;
+        } else {
+            return min;
+        }
     }
 
     public int ancestor(int v, int w) {
@@ -33,7 +37,7 @@ public class SAP {
         validVertex(w);
         BreadthFirstDirectedPaths vPath = new BreadthFirstDirectedPaths(G, v);
         BreadthFirstDirectedPaths wPath = new BreadthFirstDirectedPaths(G, w);
-        int min = Integer.MAX_VALUE;;
+        int min = Integer.MAX_VALUE;
         int loc = -1;
         for (int i = 0; i < G.V(); i++) {
             if (vPath.hasPathTo(i) && wPath.hasPathTo(i)) {
@@ -59,14 +63,18 @@ public class SAP {
                     min = length;
             }
         }
-        return min == Integer.MAX_VALUE ? -1 : min;
+        if (min == Integer.MAX_VALUE) {
+            return -1;
+        } else {
+            return min;
+        }
     }
 
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         checkArgNull(v, w);
         BreadthFirstDirectedPaths vPath = new BreadthFirstDirectedPaths(G, v);
         BreadthFirstDirectedPaths wPath = new BreadthFirstDirectedPaths(G, w);
-        int min = Integer.MAX_VALUE;;
+        int min = Integer.MAX_VALUE;
         int loc = -1;
         for (int i = 0; i < G.V(); i++) {
             if (vPath.hasPathTo(i) && wPath.hasPathTo(i)) {

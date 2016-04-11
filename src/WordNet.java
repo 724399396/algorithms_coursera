@@ -1,14 +1,9 @@
-import edu.princeton.cs.algs4.Bag;
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.SET;
-import edu.princeton.cs.algs4.ST;
-
+import edu.princeton.cs.algs4.*;
 
 public class WordNet {
     private Digraph digraph;
     private ST<Integer, Bag<String>> id2Wrods;
-    private ST<String, Integer> word2ID;
+    private ST<String, Bag<Integer>> word2ID;
     private SET<String> nouns;
     private SAP sap;
 
@@ -21,13 +16,18 @@ public class WordNet {
         while (in.hasNextLine()) {
             String line = in.readLine();
             String[] splits = line.split(",");
-            Integer id = Integer.parseInt(splits[0]);
+            int id = Integer.parseInt(splits[0]);
             String[] words = splits[1].split(" ");
             Bag<String> wordsList = new Bag<>();
             for (String word : words) {
                 wordsList.add(word);
                 nouns.add(word);
-                word2ID.put(word, id);
+                Bag<Integer> ids = word2ID.get(word);
+                if (ids == null) {
+                    ids = new Bag<>();
+                    word2ID.put(word, ids);
+                }
+                ids.add(id);
             }
             id2Wrods.put(id, wordsList);
         }
@@ -39,6 +39,10 @@ public class WordNet {
             for (int i = 1; i < ids.length; i++) {
                 digraph.addEdge(Integer.parseInt(ids[0]), Integer.parseInt(ids[i]));
             }
+        }
+        DirectedCycle directedCycle = new DirectedCycle(digraph);
+        if (directedCycle.hasCycle()) {
+            throw new IllegalArgumentException();
         }
         sap = new SAP(digraph);
     }
@@ -59,7 +63,12 @@ public class WordNet {
 
     public String sap(String nounA, String nounB) {
         checkArgNull(nounA, nounB);
-        return id2Wrods.get(sap.ancestor(word2ID.get(nounA), word2ID.get(nounB))).toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String word : id2Wrods.get(sap.ancestor(word2ID.get(nounA), word2ID.get(nounB)))) {
+            stringBuilder.insert(0, word + " ");
+        }
+        String tmp =  stringBuilder.toString();
+        return tmp.substring(0, tmp.length() - 1);
     }
 
     private void checkArgNull(Object... input) {
@@ -70,6 +79,7 @@ public class WordNet {
     }
 
     public static void main(String[] args) {
-
+        WordNet wordNet = new WordNet(args[0], args[1]);
+        //System.out.println(wordNet.sap("Alfred_Alistair_Cooke", "tiddler"));
     }
 }
