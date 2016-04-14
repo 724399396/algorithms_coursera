@@ -4,6 +4,7 @@ import edu.princeton.cs.algs4.EdgeWeightedDigraph;
 import edu.princeton.cs.algs4.Picture;
 
 import java.awt.*;
+import java.util.Iterator;
 
 /**
  * Created by weili on 16-4-14.
@@ -12,18 +13,23 @@ public class SeamCarver {
     private Picture picture;
     private DijkstraSP verticalSP;
     private DijkstraSP horizontalSP;
+    private int top;
+    private int bottom;
 
     public SeamCarver(Picture picture) {
         checkArgNull(picture);
         this.picture = picture;
         int height = picture.height();
         int width = picture.width();
-        int top = height * width;
+        top = height * width;
+        bottom = height * width + 1;
 
         // vertical SP
-        EdgeWeightedDigraph verticalGraph = new EdgeWeightedDigraph(height * width + 1);
-        for (int i = 0; i < width; i++)
+        EdgeWeightedDigraph verticalGraph = new EdgeWeightedDigraph(height * width + 2);
+        for (int i = 0; i < width; i++) {
             verticalGraph.addEdge(new DirectedEdge(top, i, energy(i, 0)));
+            verticalGraph.addEdge(new DirectedEdge(top - 1 - i, bottom, 0));
+        }
         for (int j = 0; j < height - 1; j ++) {
             for (int i = 0; i < width; i++) {
                 int cur = j * width + i;
@@ -36,17 +42,19 @@ public class SeamCarver {
         }
         verticalSP = new DijkstraSP(verticalGraph, top);
 
-        // vertical SP
-        EdgeWeightedDigraph horizontalGraph = new EdgeWeightedDigraph(height * width + 1);
-        for (int j = 0; j < height; j++)
-            horizontalGraph.addEdge(new DirectedEdge(top, j, energy(0, j)));
-        for (int j = 0; j < height - 1; j ++) {
-            for (int i = 0; i < width; i++) {
+        // horizontal SP
+        EdgeWeightedDigraph horizontalGraph = new EdgeWeightedDigraph(height * width + 2);
+        for (int j = 0; j < height; j ++) {
+            horizontalGraph.addEdge(new DirectedEdge(top, j * width, energy(0, j)));
+            horizontalGraph.addEdge(new DirectedEdge(j*width + width - 1, bottom, 0));
+        }
+        for (int j = 0; j < height; j ++) {
+            for (int i = 0; i < width-1; i++) {
                 int cur = j * width + i;
                 horizontalGraph.addEdge(new DirectedEdge(cur, cur + 1, energy(i + 1, j)));
-                if (i > 0)
+                if (j > 0)
                     horizontalGraph.addEdge(new DirectedEdge(cur, cur + 1 - width, energy(i + 1, j - 1)));
-                if (i < width - 1)
+                if (j < height - 1)
                     horizontalGraph.addEdge(new DirectedEdge(cur, cur + 1 + width, energy(i + 1, j + 1)));
             }
         }
@@ -88,11 +96,23 @@ public class SeamCarver {
     }
 
     public int[] findHorizontalSeam() {
-        return null;
+        Iterator<DirectedEdge> paths = horizontalSP.pathTo(bottom).iterator();
+        int[] res = new int[width()];
+        for (int i = 0; i < width(); i++) {
+            DirectedEdge edge = paths.next();
+            res[i] = edge.to() / width();
+        }
+        return res;
     }
 
     public int[] findVerticalSeam() {
-        return null;
+        Iterator<DirectedEdge> paths = verticalSP.pathTo(bottom).iterator();
+        int[] res = new int[height()];
+        for (int i = 0; i < height(); i++) {
+            DirectedEdge edge = paths.next();
+            res[i] = edge.to() % width();
+        }
+        return res;
     }
 
     public void removeHorizontalSeam(int[] seam) {
