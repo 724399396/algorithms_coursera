@@ -3,6 +3,7 @@
 /8puzzle
 /collinear
 /percolation
+/seamCarving
 ### Java template
 *.class
 
