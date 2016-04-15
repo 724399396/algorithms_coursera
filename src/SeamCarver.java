@@ -3,7 +3,7 @@ import edu.princeton.cs.algs4.DirectedEdge;
 import edu.princeton.cs.algs4.EdgeWeightedDigraph;
 import edu.princeton.cs.algs4.Picture;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Iterator;
 
 /**
@@ -30,7 +30,7 @@ public class SeamCarver {
             verticalGraph.addEdge(new DirectedEdge(top, i, energy(i, 0)));
             verticalGraph.addEdge(new DirectedEdge(top - 1 - i, bottom, 0));
         }
-        for (int j = 0; j < height - 1; j ++) {
+        for (int j = 0; j < height - 1; j++) {
             for (int i = 0; i < width; i++) {
                 int cur = j * width + i;
                 verticalGraph.addEdge(new DirectedEdge(cur, cur + width, energy(i, j + 1)));
@@ -44,11 +44,11 @@ public class SeamCarver {
 
         // horizontal SP
         EdgeWeightedDigraph horizontalGraph = new EdgeWeightedDigraph(height * width + 2);
-        for (int j = 0; j < height; j ++) {
+        for (int j = 0; j < height; j++) {
             horizontalGraph.addEdge(new DirectedEdge(top, j * width, energy(0, j)));
             horizontalGraph.addEdge(new DirectedEdge(j*width + width - 1, bottom, 0));
         }
-        for (int j = 0; j < height; j ++) {
+        for (int j = 0; j < height; j++) {
             for (int i = 0; i < width-1; i++) {
                 int cur = j * width + i;
                 horizontalGraph.addEdge(new DirectedEdge(cur, cur + 1, energy(i + 1, j)));
@@ -74,7 +74,7 @@ public class SeamCarver {
     }
 
     public double energy(int x, int y) {
-        if (invalidCoordinate(x,y))
+        if (invalidCoordinate(x, y))
             throw new IndexOutOfBoundsException();
         if (x == 0 || x == picture.width() - 1 || y == 0 || y == picture.height() - 1)
             return 1000.0;
@@ -119,13 +119,13 @@ public class SeamCarver {
         checkArgNull(seam);
         if (seam.length != picture.width() || picture.height() <= 1)
             throw new IllegalArgumentException();
-        for(int i = 0; i < picture.width(); i++) {
+        for (int i = 0; i < picture.width(); i++) {
             if (invalidCoordinate(i, seam[i]))
                 throw new IllegalArgumentException();
         }
         Picture newPicture = new Picture(width()-1, height()-1);
-        for (int i = 0; i < width(); i++)
-            for (int j = 0; j < height(); j++) {
+        for (int i = 0; i < width()-1; i++)
+            for (int j = 0; j < height()-1; j++) {
                 if (j >= seam[i])
                     newPicture.set(i, j, picture.get(i, j+1));
                 else
@@ -137,13 +137,13 @@ public class SeamCarver {
         checkArgNull(seam);
         if (seam.length != picture.height() || picture.width() <= 1)
             throw new IllegalArgumentException();
-        for(int i = 0; i < picture.height(); i++) {
+        for (int i = 0; i < picture.height(); i++) {
             if (invalidCoordinate(seam[i], i))
                 throw new IllegalArgumentException();
         }
         Picture newPicture = new Picture(width()-1, height()-1);
-        for (int j = 0; j < height(); j++)
-            for (int i = 0; i < width(); i++) {
+        for (int j = 0; j < height()-1; j++)
+            for (int i = 0; i < width()-1; i++) {
                 if (i >= seam[j])
                     newPicture.set(i, j, picture.get(i + 1, j));
                 else
