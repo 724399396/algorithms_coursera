@@ -74,7 +74,7 @@ public class SeamCarver {
     }
 
     public double energy(int x, int y) {
-        if (invalidCordination(x,y))
+        if (invalidCoordinate(x,y))
             throw new IndexOutOfBoundsException();
         if (x == 0 || x == picture.width() - 1 || y == 0 || y == picture.height() - 1)
             return 1000.0;
@@ -85,8 +85,8 @@ public class SeamCarver {
         double gx = x2Color.getGreen() - x1Color.getGreen();
         double bx = x2Color.getBlue() - x1Color.getBlue();
 
-        Color y2Color = picture.get(x+1, y);
-        Color y1Color = picture.get(x-1, y);
+        Color y2Color = picture.get(x, y+1);
+        Color y1Color = picture.get(x, y-1);
         double ry = y2Color.getRed() - y1Color.getRed();
         double gy = y2Color.getGreen() - y1Color.getGreen();
         double by = y2Color.getBlue() - y1Color.getBlue();
@@ -120,9 +120,17 @@ public class SeamCarver {
         if (seam.length != picture.width() || picture.height() <= 1)
             throw new IllegalArgumentException();
         for(int i = 0; i < picture.width(); i++) {
-            if (invalidCordination(i, seam[i]))
+            if (invalidCoordinate(i, seam[i]))
                 throw new IllegalArgumentException();
         }
+        Picture newPicture = new Picture(width()-1, height()-1);
+        for (int i = 0; i < width(); i++)
+            for (int j = 0; j < height(); j++) {
+                if (j >= seam[i])
+                    newPicture.set(i, j, picture.get(i, j+1));
+                else
+                    newPicture.set(i, j, picture.get(i, j));
+            }
     }
 
     public void removeVerticalSeam(int[] seam) {
@@ -130,9 +138,17 @@ public class SeamCarver {
         if (seam.length != picture.height() || picture.width() <= 1)
             throw new IllegalArgumentException();
         for(int i = 0; i < picture.height(); i++) {
-            if (invalidCordination(seam[i], i))
+            if (invalidCoordinate(seam[i], i))
                 throw new IllegalArgumentException();
         }
+        Picture newPicture = new Picture(width()-1, height()-1);
+        for (int j = 0; j < height(); j++)
+            for (int i = 0; i < width(); i++) {
+                if (i >= seam[j])
+                    newPicture.set(i, j, picture.get(i + 1, j));
+                else
+                    newPicture.set(i, j, picture.get(i, j));
+            }
     }
 
     private void checkArgNull(Object... args) {
@@ -142,7 +158,7 @@ public class SeamCarver {
         }
     }
 
-    private boolean invalidCordination(int x, int y) {
+    private boolean invalidCoordinate(int x, int y) {
         return (x > picture.width() - 1 || x < 0
                 || y > picture.height() - 1 || y < 0);
     }
