@@ -10,8 +10,6 @@ import java.util.Iterator;
  * Created by weili on 16-4-14.
  */
 public class SeamCarver {
-    private DijkstraSP verticalSP;
-    private DijkstraSP horizontalSP;
     private Color[][] colors;
     private int width;
     private int height;
@@ -67,10 +65,8 @@ public class SeamCarver {
 
     public int[] findHorizontalSeam() {
         // horizontal SP
-        int height = height();
-        int width = width();
-        int top = height() * width();
-        int bottom = height() * width() + 1;
+        int top = height * width;
+        int bottom = height * width + 1;
         EdgeWeightedDigraph horizontalGraph = new EdgeWeightedDigraph(height * width + 2);
         for (int j = 0; j < height; j++) {
             horizontalGraph.addEdge(new DirectedEdge(top, j * width, energy(0, j)));
@@ -86,7 +82,7 @@ public class SeamCarver {
                     horizontalGraph.addEdge(new DirectedEdge(cur, cur + 1 + width, energy(i + 1, j + 1)));
             }
         }
-        horizontalSP = new DijkstraSP(horizontalGraph, top);
+        DijkstraSP horizontalSP = new DijkstraSP(horizontalGraph, top);
 
         Iterator<DirectedEdge> paths = horizontalSP.pathTo(bottom).iterator();
         int[] res = new int[width()];
@@ -99,10 +95,8 @@ public class SeamCarver {
 
     public int[] findVerticalSeam() {
         // vertical SP
-        int height = height();
-        int width = width();
-        int top = height() * width();
-        int bottom = height() * width() + 1;
+        int top = height * width;
+        int bottom = height * width + 1;
         EdgeWeightedDigraph verticalGraph = new EdgeWeightedDigraph(height * width + 2);
         for (int i = 0; i < width; i++) {
             verticalGraph.addEdge(new DirectedEdge(top, i, energy(i, 0)));
@@ -118,7 +112,7 @@ public class SeamCarver {
                     verticalGraph.addEdge(new DirectedEdge(cur, cur + width + 1, energy(i + 1, j + 1)));
             }
         }
-        verticalSP = new DijkstraSP(verticalGraph, top);
+        DijkstraSP verticalSP = new DijkstraSP(verticalGraph, top);
         Iterator<DirectedEdge> paths = verticalSP.pathTo(bottom).iterator();
         int[] res = new int[height()];
         for (int i = 0; i < height(); i++) {
