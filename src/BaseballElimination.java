@@ -1,4 +1,10 @@
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.FlowEdge;
+import edu.princeton.cs.algs4.FordFulkerson;
+import edu.princeton.cs.algs4.ST;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.FlowNetwork;
+import edu.princeton.cs.algs4.Bag;
+import edu.princeton.cs.algs4.StdOut;
 
 /**
  * Created by weili on 16-4-21.
@@ -92,14 +98,19 @@ public class BaseballElimination {
                 if (s2Index <= s1Index)
                     continue;
                 flowNetWord.addEdge(new FlowEdge(s, i, against(s1, s2)));
-                s2Index = s2Index > compareTeamIndex? s2Index + composeNumbers : s2Index + 1 + composeNumbers;
+                if (s2Index > compareTeamIndex)
+                    s2Index = s2Index + composeNumbers;
+                else
+                    s2Index = s2Index + 1 + composeNumbers;
                 s1Index = s1Index > compareTeamIndex? s1Index + composeNumbers : s1Index + 1 + composeNumbers;
                 flowNetWord.addEdge(new FlowEdge(i, s1Index, Double.POSITIVE_INFINITY));
                 flowNetWord.addEdge(new FlowEdge(i, s2Index, Double.POSITIVE_INFINITY));
                 Double oldS1 = acc.get(s1Index);
                 Double oldS2 = acc.get(s2Index);
-                oldS1 = oldS1 == null ? wins(team) + remaining(team) - wins(s1) : oldS1;
-                oldS2 = oldS2 == null ? wins(team) + remaining(team) - wins(s2) : oldS2;
+                if (oldS1 == null)
+                    oldS1 = (double) wins(team) + remaining(team) - wins(s1);
+                if (oldS2 == null)
+                    oldS2 = (double) wins(team) + remaining(team) - wins(s2);
                 acc.put(s1Index, oldS1);
                 acc.put(s2Index, oldS2);
                 i++;
