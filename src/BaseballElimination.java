@@ -41,7 +41,7 @@ public class BaseballElimination {
         }
     }
 
-    public int numberOfTeam() {
+    public int numberOfTeams() {
         return teamNumbers;
     }
 
@@ -80,8 +80,8 @@ public class BaseballElimination {
             }
         }
         int compareTeamIndex = name2Index.get(team);
-        int composeNumbers = (numberOfTeam() - 1) * (numberOfTeam() - 2) / 2;
-        int vertices = 2 + composeNumbers + numberOfTeam() - 1;
+        int composeNumbers = (numberOfTeams() - 1) * (numberOfTeams() - 2) / 2;
+        int vertices = 2 + composeNumbers + numberOfTeams() - 1;
         FlowNetwork flowNetWord = new FlowNetwork(vertices);
         int s = 0;
         int t = vertices - 1;
@@ -116,12 +116,12 @@ public class BaseballElimination {
                 i++;
             }
         }
-        for (int j = 0; j < numberOfTeam() - 1; j++) {
+        for (int j = 0; j < numberOfTeams() - 1; j++) {
             int v = t-1-j;
             flowNetWord.addEdge(new FlowEdge(v, t, acc.get(v)));
         }
         maxFlow = new FordFulkerson(flowNetWord, s, t);
-        for(int j = 0; j < numberOfTeam() - 1; j++) {
+        for(int j = 0; j < numberOfTeams() - 1; j++) {
             if (maxFlow.inCut(t - j - 1)) {
                 return true;
             }
@@ -142,10 +142,10 @@ public class BaseballElimination {
         if (!res.isEmpty()) {
             return res;
         }
-        int composeNumbers = (numberOfTeam() - 1) * (numberOfTeam() - 2) / 2;
-        int vertices = 2 + composeNumbers + numberOfTeam() - 1;
+        int composeNumbers = (numberOfTeams() - 1) * (numberOfTeams() - 2) / 2;
+        int vertices = 2 + composeNumbers + numberOfTeams() - 1;
         int t = vertices - 1;
-        for(int j = 0; j < numberOfTeam() - 1; j++) {
+        for(int j = 0; j < numberOfTeams() - 1; j++) {
             if (maxFlow.inCut(t - j - 1)) {
                 int index = j < name2Index.get(team) ? j : j + 1;
                 res.add(index2Name.get(index));
