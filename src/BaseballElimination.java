@@ -11,13 +11,14 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public class BaseballElimination {
     private int teamNumbers;
-    private ST<String,Integer> name2Index;
+    private ST<String, Integer> name2Index;
     private ST<Integer, String> index2Name;
     private int[] w;
     private int[] l;
     private int[] r;
     private int[][] g;
     private FordFulkerson maxFlow;
+    private ST<Integer, String> ref;
 
     public BaseballElimination(String filename) {
         In in = new In(filename);
@@ -28,14 +29,14 @@ public class BaseballElimination {
         l = new int[teamNumbers];
         r = new int[teamNumbers];
         g = new int[teamNumbers][teamNumbers];
-        for(int i = 0; i < teamNumbers; i++) {
+        for (int i = 0; i < teamNumbers; i++) {
             String name = in.readString();
             name2Index.put(name, i);
             index2Name.put(i, name);
             w[i] = Integer.parseInt(in.readString());
             l[i] = Integer.parseInt(in.readString());
             r[i] = Integer.parseInt(in.readString());
-            for(int j = 0; j < teamNumbers; j++) {
+            for (int j = 0; j < teamNumbers; j++) {
                 g[i][j] = Integer.parseInt(in.readString());
             }
         }
@@ -86,7 +87,8 @@ public class BaseballElimination {
         int s = 0;
         int t = vertices - 1;
         int i = 1;
-        ST<Integer,Double> acc = new ST<>();
+        ST<Integer, Double> acc = new ST<>();
+        ref = new ST<>();
         for (String s1 : teams()) {
             if (s1.equals(team))
                 continue;
@@ -102,7 +104,10 @@ public class BaseballElimination {
                     s2Index = s2Index + composeNumbers;
                 else
                     s2Index = s2Index + 1 + composeNumbers;
-                s1Index = s1Index > compareTeamIndex? s1Index + composeNumbers : s1Index + 1 + composeNumbers;
+                if (s1Index > compareTeamIndex)
+                    s1Index =  s1Index + composeNumbers;
+                else
+                    s1Index = s1Index + 1 + composeNumbers;
                 flowNetWord.addEdge(new FlowEdge(i, s1Index, Double.POSITIVE_INFINITY));
                 flowNetWord.addEdge(new FlowEdge(i, s2Index, Double.POSITIVE_INFINITY));
                 Double oldS1 = acc.get(s1Index);
@@ -113,6 +118,8 @@ public class BaseballElimination {
                     oldS2 = (double) wins(team) + remaining(team) - wins(s2);
                 acc.put(s1Index, oldS1);
                 acc.put(s2Index, oldS2);
+                ref.put(s1Index, s1);
+                ref.put(s2Index, s2);
                 i++;
             }
         }
@@ -121,7 +128,7 @@ public class BaseballElimination {
             flowNetWord.addEdge(new FlowEdge(v, t, acc.get(v)));
         }
         maxFlow = new FordFulkerson(flowNetWord, s, t);
-        for(int j = 0; j < numberOfTeams() - 1; j++) {
+        for (int j = 0; j < numberOfTeams() - 1; j++) {
             if (maxFlow.inCut(t - j - 1)) {
                 return true;
             }
@@ -145,17 +152,19 @@ public class BaseballElimination {
         int composeNumbers = (numberOfTeams() - 1) * (numberOfTeams() - 2) / 2;
         int vertices = 2 + composeNumbers + numberOfTeams() - 1;
         int t = vertices - 1;
-        for(int j = 0; j < numberOfTeams() - 1; j++) {
+        for (int j = 0; j < numberOfTeams() - 1; j++) {
             if (maxFlow.inCut(t - j - 1)) {
-                int index = j < name2Index.get(team) ? j : j + 1;
-                res.add(index2Name.get(index));
+                res.add(ref.get(t - j - 1));
             }
+        }
+        if (res.isEmpty()) {
+            return null;
         }
         return res;
     }
 
     private void checkTeam(String team) {
-        if (!name2Index.contains(team)){
+        if (!name2Index.contains(team)) {
             throw new IllegalArgumentException();
         }
     }
