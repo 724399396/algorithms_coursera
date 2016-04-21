@@ -19,6 +19,7 @@ public class BaseballElimination {
     private int[][] g;
     private FordFulkerson maxFlow;
     private ST<Integer, String> ref;
+    private boolean[] caculate;
 
     public BaseballElimination(String filename) {
         In in = new In(filename);
@@ -29,6 +30,7 @@ public class BaseballElimination {
         l = new int[teamNumbers];
         r = new int[teamNumbers];
         g = new int[teamNumbers][teamNumbers];
+        caculate = new boolean[teamNumbers];
         for (int i = 0; i < teamNumbers; i++) {
             String name = in.readString();
             name2Index.put(name, i);
@@ -73,6 +75,7 @@ public class BaseballElimination {
 
     public boolean isEliminated(String team) {
         checkTeam(team);
+        caculate[name2Index.get(team)] = true;
         for (String other : teams()) {
             if (!other.equals(team)) {
                 if (wins(other) > wins(team) + remaining(team)) {
@@ -138,6 +141,8 @@ public class BaseballElimination {
 
     public Iterable<String> certificateOfElimination(String team) {
         checkTeam(team);
+        if (!caculate[name2Index.get(team)])
+            isEliminated(team);
         Bag<String> res = new Bag<>();
         for (String other : teams()) {
             if (!other.equals(team)) {
