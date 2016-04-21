@@ -4,6 +4,7 @@
 /collinear
 /percolation
 /seamCarving
+/baseball
 ### Java template
 *.class
 
