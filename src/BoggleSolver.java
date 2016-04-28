@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Set;
 
 public class BoggleSolver {
-    private TST dictionary;
+    private TST<Integer> dictionary;
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
     public BoggleSolver(String[] dictionary) {
-        this.dictionary = new TST();
+        this.dictionary = new TST<>();
         for (String s : dictionary) {
             this.dictionary.put(s,0);
         }
