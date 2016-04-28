@@ -29,8 +29,6 @@ public class BoggleSolver {
 
     private List<String> findString(int i, int j, String prefix, Set<Location> prefixLocation, BoggleBoard boggleBoard) {
         List<String> res = new ArrayList<>();
-        if (i == 1)
-            System.out.println();
         char c = boggleBoard.getLetter(i, j);
         String newPrefix;
         if (c == 'Q') {
@@ -39,9 +37,9 @@ public class BoggleSolver {
             newPrefix = prefix + c;
         }
 
-        Set<Location> newPrefixLocation = new HashSet<>(prefixLocation);
-        if (newPrefixLocation.contains(new Location(i, j)))
+        if (prefixLocation.contains(new Location(i, j)))
             return res;
+        Set<Location> newPrefixLocation = new HashSet<>(prefixLocation);
         newPrefixLocation.add(new Location(i, j));
 
         if (dictionary.contains(newPrefix)) {
