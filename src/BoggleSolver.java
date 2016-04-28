@@ -1,4 +1,4 @@
-import edu.princeton.cs.algs4.TrieSET;
+import edu.princeton.cs.algs4.TST;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Set;
 
 public class BoggleSolver {
-    private TrieSET dictionary;
+    private TST dictionary;
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
     public BoggleSolver(String[] dictionary) {
-        this.dictionary = new TrieSET();
+        this.dictionary = new TST();
         for (String s : dictionary) {
-            this.dictionary.add(s);
+            this.dictionary.put(s,0);
         }
     }
 
@@ -38,15 +38,12 @@ public class BoggleSolver {
         }
 
         Set<Location> newPrefixLocation = new HashSet<>(prefixLocation);
+        if (newPrefixLocation.contains(new Location(i, j)))
+            return res;
         newPrefixLocation.add(new Location(i, j));
 
         if (dictionary.contains(newPrefix)) {
-            int stringLength = 0;
-            for (int n = 0; n < newPrefix.length(); n++) {
-                if (newPrefix.charAt(n) != 'Q')
-                    stringLength++;
-            }
-            if (stringLength >= 3 && newPrefixLocation.size() == stringLength)
+            if (newPrefix.length() >= 3)
               res.add(newPrefix);
         }
 
@@ -133,14 +130,6 @@ public class BoggleSolver {
             result = 31 * result + y;
             return result;
         }
-    }
-
-    private String locSet2String(Iterable<Location> locs, BoggleBoard board) {
-        StringBuilder sb = new StringBuilder();
-        for (Location loc : locs) {
-            sb.append(board.getLetter(loc.getX(), loc.getY()));
-        }
-        return sb.toString();
     }
 
     // Returns the score of the given word if it is in the dictionary, zero otherwise.
