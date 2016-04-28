@@ -12,7 +12,7 @@ public class BoggleSolver {
     public BoggleSolver(String[] dictionary) {
         this.dictionary = new TST<>();
         for (String s : dictionary) {
-            this.dictionary.put(s,0);
+            this.dictionary.put(s, 0);
         }
     }
 
@@ -29,6 +29,8 @@ public class BoggleSolver {
 
     private List<String> findString(int i, int j, String prefix, Set<Location> prefixLocation, BoggleBoard boggleBoard) {
         List<String> res = new ArrayList<>();
+        if (i == 1)
+            System.out.println();
         char c = boggleBoard.getLetter(i, j);
         String newPrefix;
         if (c == 'Q') {
@@ -60,9 +62,9 @@ public class BoggleSolver {
         int x = loc.getX();
         int y = loc.getY();
         List<Location> res = new ArrayList<>();
-        if (x < boggleBoard.cols()-1) {
+        if (x < boggleBoard.rows()-1) {
             res.add(new Location(x+1, y));
-            if (y < boggleBoard.rows() - 1) {
+            if (y < boggleBoard.cols() - 1) {
                 res.add(new Location(x+1, y+1));
             }
             if (y > 0) {
@@ -74,14 +76,14 @@ public class BoggleSolver {
             if (y > 0) {
                 res.add(new Location(x-1, y-1));
             }
-            if (y < boggleBoard.rows() - 1) {
+            if (y < boggleBoard.cols() - 1) {
                 res.add(new Location(x-1, y+1));
             }
         }
         if (y > 0) {
             res.add(new Location(x, y-1));
         }
-        if (y < boggleBoard.rows() - 1) {
+        if (y < boggleBoard.cols() - 1) {
             res.add(new Location(x, y+1));
         }
         return res;
@@ -114,6 +116,7 @@ public class BoggleSolver {
 
         @Override
         public boolean equals(Object o) {
+            if (o == null) return false;
             if (this == o) return true;
             if (!(o.getClass().equals(Location.class))) return false;
 
