@@ -43,12 +43,10 @@ public class BoggleSolver {
         if (dictionary.contains(newPrefix)) {
             int stringLength = 0;
             for (int n = 0; n < newPrefix.length(); n++) {
-                if (newPrefix.charAt(n) != 'U')
+                if (newPrefix.charAt(n) != 'Q')
                     stringLength++;
             }
-            if (newPrefix.contains("Q"))
-                System.out.println();
-            if (newPrefixLocation.size() == stringLength)
+            if (stringLength >= 3 && newPrefixLocation.size() == stringLength)
               res.add(newPrefix);
         }
 
@@ -92,7 +90,7 @@ public class BoggleSolver {
         return res;
     }
 
-    static class Location {
+    private static class Location {
         private int x;
         private int y;
 
@@ -120,7 +118,7 @@ public class BoggleSolver {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof Location)) return false;
+            if (!(o.getClass().equals(Location.class))) return false;
 
             Location location = (Location) o;
 
