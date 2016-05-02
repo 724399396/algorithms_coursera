@@ -2,11 +2,11 @@ import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
 
 public class MoveToFront {
-    private static int R = 256;
+    private static final int R = 256;
 
     public static void encode() {
         int[] table = asciiTableBuild();
-        while(!BinaryStdIn.isEmpty()) {
+        while (!BinaryStdIn.isEmpty()) {
             char c = BinaryStdIn.readChar(8);
             BinaryStdOut.write(table[c], 8);
             for (int i = 0; i < R; i++)
@@ -27,7 +27,7 @@ public class MoveToFront {
 
     public static void decode() {
         int[] table = asciiTableBuild();
-        while(!BinaryStdIn.isEmpty()) {
+        while (!BinaryStdIn.isEmpty()) {
             int loc = BinaryStdIn.readChar(8);
             char cur = (char) table[loc];
             BinaryStdOut.write(cur, 8);

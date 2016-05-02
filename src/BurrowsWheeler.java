@@ -1,11 +1,15 @@
-import edu.princeton.cs.algs4.*;
 
+import edu.princeton.cs.algs4.BinaryStdIn;
+import edu.princeton.cs.algs4.BinaryStdOut;
+import edu.princeton.cs.algs4.TST;
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.ST;
 import java.util.Arrays;
 
 public class BurrowsWheeler {
     // apply Burrows-Wheeler encoding, reading from standard input and writing to standard output
     public static void encode() {
-        String s = StdIn.readAll();
+        String s = BinaryStdIn.readString();
         int length = s.length();
         TST<Integer> sorted = new TST<>();
         String[] substrings = new String[length];
@@ -37,18 +41,22 @@ public class BurrowsWheeler {
         ST<Character, Queue<Integer>> tHelp = new ST<>();
         for (int j = 0; j < i.length; j++) {
             Queue<Integer> old = tHelp.get(t[j]);
-            if (old == null)
+            if (old == null) {
                 old = new Queue<>();
+                tHelp.put(t[j], old);
+            }
             old.enqueue(j);
         }
         int[] next = new int[i.length];
         for (int j = 0; j < i.length; j++) {
             next[j] = tHelp.get(i[j]).dequeue();
         }
-        for (int j = 0; j < i.length; j++) {
-            StdOut.print(t[first]);
-            first = next[first];
+        int start = next[first];
+        for (int j = 0; j < i.length - 1; j++) {
+            BinaryStdOut.write(t[start]);
+            start = next[start];
         }
+        BinaryStdOut.write(t[first]);
     }
 
     // if args[0] is '-', apply Burrows-Wheeler encoding
