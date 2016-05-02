@@ -7,27 +7,59 @@ import edu.princeton.cs.algs4.ST;
 import java.util.Arrays;
 
 public class BurrowsWheeler {
+    private static class StringNode implements Comparable<StringNode> {
+        private String str;
+        private int k;
+
+        public StringNode(String str, int k) {
+            this.str = str;
+            this.k = k;
+        }
+
+        @Override
+        public int compareTo(StringNode that) {
+            int len = str.length();
+            for (int i = 0; i < len; i++) {
+                char c1 = str.charAt((k + i) % len);
+                char c2 = that.str.charAt((that.k + i) % len);
+                if (c1 < c2)
+                    return -1;
+                else if (c1 > c2)
+                    return 1;
+                else
+                    continue;
+            }
+            return 0;
+        }
+
+        public int getK() {
+            return k;
+        }
+
+        public String getStr() {
+            return str;
+        }
+    }
+
     // apply Burrows-Wheeler encoding, reading from standard input and writing to standard output
     public static void encode() {
         String s = BinaryStdIn.readString();
         int length = s.length();
-        TST<Integer> sorted = new TST<>();
-        String[] substrings = new String[length];
+        StringNode[] substrings = new StringNode[length];
         for (int i = 0; i < length; i++)
-            substrings[i] = s.substring(i, length) + s.substring(0, i);
-        String[] sortedHelp = Arrays.copyOf(substrings, length);
-        Arrays.sort(sortedHelp);
-        for (int i = 0; i < length; i++) {
-            sorted.put(substrings[i], i);
-        }
+            substrings[i] = new StringNode(s, i);
         int[] index = new int[length];
+        Arrays.sort(substrings);
         for (int i = 0; i < length; i++)
-            index[i] = sorted.get(sortedHelp[i]);
+            index[i] = substrings[i].getK();
         for (int i = 0; i < length; i++)
             if (index[i] == 0)
                 BinaryStdOut.write(i);
-        for (int i = 0; i < length; i++)
-            BinaryStdOut.write(sortedHelp[i].charAt(length-1), 8);
+        for (int i = 0; i < length; i++) {
+            StringNode node = substrings[i];
+            String str = node.getStr();
+            BinaryStdOut.write(str.charAt((node.getK()+str.length()-1) % str.length()), 8);
+        }
         BinaryStdOut.flush();
     }
 
@@ -57,6 +89,7 @@ public class BurrowsWheeler {
             start = next[start];
         }
         BinaryStdOut.write(t[first]);
+        BinaryStdOut.flush();
     }
 
     // if args[0] is '-', apply Burrows-Wheeler encoding
