@@ -1,6 +1,4 @@
-import edu.princeton.cs.algs4.BinaryStdOut;
-import edu.princeton.cs.algs4.StdIn;
-import edu.princeton.cs.algs4.TST;
+import edu.princeton.cs.algs4.*;
 
 import java.util.Arrays;
 
@@ -31,7 +29,26 @@ public class BurrowsWheeler {
 
     // apply Burrows-Wheeler decoding, reading from standard input and writing to standard output
     public static void decode() {
-
+        int first = BinaryStdIn.readInt();
+        String s = BinaryStdIn.readString();
+        char[] t = s.toCharArray();
+        char[] i = Arrays.copyOf(t, t.length);
+        Arrays.sort(i);
+        ST<Character, Queue<Integer>> tHelp = new ST<>();
+        for (int j = 0; j < i.length; j++) {
+            Queue<Integer> old = tHelp.get(t[j]);
+            if (old == null)
+                old = new Queue<>();
+            old.enqueue(j);
+        }
+        int[] next = new int[i.length];
+        for (int j = 0; j < i.length; j++) {
+            next[j] = tHelp.get(i[j]).dequeue();
+        }
+        for (int j = 0; j < i.length; j++) {
+            StdOut.print(t[first]);
+            first = next[first];
+        }
     }
 
     // if args[0] is '-', apply Burrows-Wheeler encoding
